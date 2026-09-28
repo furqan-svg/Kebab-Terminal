@@ -10,6 +10,8 @@ import AdminAuth from './pages/Auth/AdminAuth';
 import CustomerDashboard from './pages/Customer/CustomerDashboard';
 import KDSDashboard from './pages/KDS/KDSDashboard';
 import AdminDashboard from './pages/Dashboard/AdminDashboard';
+import KioskHome from './pages/Kiosk/KioskHome';
+import KioskCheckout from './pages/Kiosk/KioskCheckout';
 import HomeLanding from './pages/HomeLanding';
 
 // Simple Route Protection
@@ -31,6 +33,10 @@ function App() {
           <Route path="/auth/customer" element={<CustomerAuth />} />
           <Route path="/auth/admin" element={<AdminAuth />} />
           
+          {/* Self-Service Kiosk Routes */}
+          <Route path="/kiosk" element={<KioskHome />} />
+          <Route path="/kiosk/checkout" element={<KioskCheckout />} />
+
           {/* Customer Portal */}
           <Route path="/customer/*" element={
             <ProtectedRoute role="customer">

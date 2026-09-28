@@ -24,6 +24,7 @@ export default function CustomerDashboard() {
   const { menu, cart, addToCart, removeFromCart, updateCartQuantity, placeOrder, orders, user, logout } = useAppContext();
   const [activeTab, setActiveTab] = useState('menu'); // menu, track, history
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [orderMode, setOrderMode] = useState('Dine-in');
   const [showPaymentMock, setShowPaymentMock] = useState(false);
@@ -31,11 +32,30 @@ export default function CustomerDashboard() {
   const navigate = useNavigate();
 
   const categories = ['All', ...new Set(menu.map(item => item.category))];
-  const filteredMenu = selectedCategory === 'All' ? menu : menu.filter(item => item.category === selectedCategory);
+  const filteredMenu = menu.filter(item => {
+    const matchesCat = selectedCategory === 'All' || item.category === selectedCategory;
+    const matchesSearch = searchQuery 
+      ? (item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+         item.description.toLowerCase().includes(searchQuery.toLowerCase()))
+      : true;
+    return matchesCat && matchesSearch;
+  });
   const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   
   const myOrders = orders.filter(o => o.customerEmail === user?.email);
   const activeOrder = myOrders.find(o => o.status !== 'completed');
+
+  const handleReorder = (order) => {
+    if (order.items && order.items.length > 0) {
+      order.items.forEach(item => {
+        for (let i = 0; i < item.quantity; i++) {
+          addToCart(item);
+        }
+      });
+      setIsCartOpen(true);
+      setActiveTab('menu');
+    }
+  };
 
   const handlePlaceOrder = () => {
     setShowPaymentMock(true);
@@ -86,7 +106,13 @@ export default function CustomerDashboard() {
               {/* SEARCH & FILTERS */}
               <div style={{ position: 'relative', marginBottom: '1.5rem' }}>
                 <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-                <input type="text" placeholder="Search delicious kebabs..." style={{ width: '100%', padding: '0.8rem 1rem 0.8rem 2.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-glass)', borderRadius: '1rem', color: 'white' }} />
+                <input 
+                  type="text" 
+                  placeholder="Search delicious kebabs..." 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{ width: '100%', padding: '0.8rem 1rem 0.8rem 2.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-glass)', borderRadius: '1rem', color: 'white', outline: 'none' }} 
+                />
               </div>
 
               <div style={{ display: 'flex', gap: '0.8rem', overflowX: 'auto', paddingBottom: '1rem', scrollbarWidth: 'none' }}>
@@ -206,8 +232,8 @@ export default function CustomerDashboard() {
                       ))}
                     </div>
                     <div className="flex-between">
-                      <span style={{ fontWeight: 700 }}>${o.total.toFixed(2)}</span>
-                      <button className="glass-button" style={{ color: 'var(--primary)', borderColor: 'var(--primary)', fontSize: '0.8rem' }}>Reorder</button>
+                      <span style={{ fontWeight: 700 }}>${(Number(o.total) || 0).toFixed(2)}</span>
+                      <button onClick={() => handleReorder(o)} className="glass-button" style={{ color: 'var(--primary)', borderColor: 'var(--primary)', fontSize: '0.8rem', cursor: 'pointer' }}>Reorder</button>
                     </div>
                   </div>
                 ))}

@@ -45,12 +45,21 @@ export default function HomeLanding() {
           </button>
           
           <button 
+            onClick={() => navigate('/kiosk')} 
+            className="glass-button" 
+            style={{ padding: '1.4rem', borderRadius: '1.5rem', justifyContent: 'center', gap: '0.8rem', borderColor: 'rgba(249, 115, 22, 0.4)', background: 'rgba(249, 115, 22, 0.08)' }}
+          >
+            <UtensilsCrossed size={22} color="var(--primary)" />
+            <span style={{ fontWeight: 700 }}>Self-Service Kiosk Mode</span>
+          </button>
+
+          <button 
             onClick={() => navigate('/auth/admin')} 
             className="glass-button" 
-            style={{ padding: '1.5rem', borderRadius: '1.5rem', justifyContent: 'center', gap: '1rem' }}
+            style={{ padding: '1.4rem', borderRadius: '1.5rem', justifyContent: 'center', gap: '0.8rem' }}
           >
-            <ShieldCheck size={24} color="var(--primary)" />
-            <span>Staff Terminal</span>
+            <ShieldCheck size={22} color="var(--primary)" />
+            <span>Staff Terminal & Kitchen KDS</span>
           </button>
         </div>
 
